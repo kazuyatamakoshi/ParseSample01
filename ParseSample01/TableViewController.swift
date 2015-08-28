@@ -9,6 +9,7 @@
 import UIKit
 import Parse
 import ParseUI
+import Bolts
 
 class TableViewController: PFQueryTableViewController {
     
@@ -66,9 +67,18 @@ class TableViewController: PFQueryTableViewController {
     }
 
     override func viewDidAppear(animated: Bool) {
-
+        
         // Refresh the table to ensure any data changes are displayed
         tableView.reloadData()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.title = PFUser.currentUser()?.username
+        
+        // Hide back button in navigation item
+        self.navigationItem.setHidesBackButton(true, animated: true)
     }
     
     @IBAction func add(sender: UIBarButtonItem) {
@@ -76,6 +86,14 @@ class TableViewController: PFQueryTableViewController {
         dispatch_async(dispatch_get_main_queue()) {
             self.performSegueWithIdentifier("TableViewToDetailView", sender: self)
         }
+    }
+    @IBAction func signOut(sender: UIBarButtonItem) {
+        // Sign the user out
+        PFUser.logOut()
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewControllerWithIdentifier("SignInViewController") as! UIViewController
+        self.presentViewController(vc, animated: true, completion: nil)
     }
 }
 
